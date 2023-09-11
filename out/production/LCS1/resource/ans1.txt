@@ -1,0 +1,6 @@
+c Example CNF format file
+s cnf 1 4 3
+v true
+v true
+v true
+v true

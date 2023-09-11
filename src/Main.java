@@ -2,16 +2,6 @@ import java.util.*;
 
 public class Main {
 
-//    String[] name = new String[]{"Brit","Swede","Dane","name1","name2"};
-//    String[] color = new String[]{"red","green","white","yellow","blue"};
-//
-//    String[] pets = new String[]{"dog","bird","cat","horse","fish"};
-//    String[] drink = new String[]{"tea","coffee","milk","beer","water"};
-//    String[] cigars = new String[]{"Pall Mall","Dunhill","Blend","Bluemaster","Prince"};
-//    String[] nationality = new String[]{"Norwegian","German","n1","n2","n3"};
-//    String[][] ss = new String[][]{name,color,pets,drink,cigars,nationality};
-//
-//    int x=6,y=5,z=5;
     String[] nationality = new String[]{"Brit","Swede","Dane","Norwegian","German"};
     String[] color = new String[]{"red","green","white","yellow","blue"};
 
@@ -232,26 +222,35 @@ public class Main {
         t2 = getType("water");
         Node h15 = nextEachOther(t1[0],t1[1],t2[0],t2[1]);
 
- //       res.list.add(basic);
-//        res.list.add(h1);
-//        res.list.add(h2);
-//        res.list.add(h3);
-//        res.list.add(h4);
-//        res.list.add(h5);
+        res.list.add(basic);
+        res.list.add(h1);
+        res.list.add(h2);
+        res.list.add(h3);
+        res.list.add(h4);
+        res.list.add(h5);
         res.list.add(h6);
-//        res.list.add(h7);
-//        res.list.add(h8);
-//        res.list.add(h9);
-//        res.list.add(h10);
-//        res.list.add(h11);
-//        res.list.add(h12);
-//        res.list.add(h13);
-//        res.list.add(h14);
-//        res.list.add(h15);
+        res.list.add(h7);
+        res.list.add(h8);
+        res.list.add(h9);
+        res.list.add(h10);
+        res.list.add(h11);
+        res.list.add(h12);
+        res.list.add(h13);
+        res.list.add(h14);
+        res.list.add(h15);
 
         return res;
     }
 
+    public void print(){
+        for(int k=0;k<x;k++){
+            System.out.print("[");
+            for(int i=0;i<y;i++){
+                System.out.print(ss[k][i]+", ");
+            }
+            System.out.println("],");
+        }
+    }
 
     public boolean evaluate(){
         Map<Integer, CNFEval.Info> map = new HashMap<>();
@@ -286,18 +285,20 @@ public class Main {
     }
 
     public static void main(String[] args) {
+
        Main main = new Main();
-       //main.evaluate();
+       main.print();
+       main.evaluate();
 
-       Encoder encoder = new Encoder();
-
-       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/t1.txt");
-       CNFEval cnfEval = new CNFEval(encoder.n);
-       boolean res = cnfEval.eval(root,0);
-//       for(int i=0;i< cnfEval.n;i++){
-//           System.out.print(cnfEval.values[i]+" ");
-//       }
-        encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/ans1.txt",res, cnfEval.values);
+//       Encoder encoder = new Encoder();
+//
+//       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/t1.txt");
+//       CNFEval cnfEval = new CNFEval(encoder.n);
+//       boolean res = cnfEval.eval(root,0);
+////       for(int i=0;i< cnfEval.n;i++){
+////           System.out.print(cnfEval.values[i]+" ");
+////       }
+//        encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/ans1.txt",res, cnfEval.values);
 
     }
 }
