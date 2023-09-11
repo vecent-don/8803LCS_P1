@@ -232,22 +232,22 @@ public class Main {
         t2 = getType("water");
         Node h15 = nextEachOther(t1[0],t1[1],t2[0],t2[1]);
 
-        res.list.add(basic);
-        res.list.add(h1);
-        res.list.add(h2);
-        res.list.add(h3);
-        res.list.add(h4);
-        res.list.add(h5);
+ //       res.list.add(basic);
+//        res.list.add(h1);
+//        res.list.add(h2);
+//        res.list.add(h3);
+//        res.list.add(h4);
+//        res.list.add(h5);
         res.list.add(h6);
-        res.list.add(h7);
-        res.list.add(h8);
-        res.list.add(h9);
-        res.list.add(h10);
-        res.list.add(h11);
-        res.list.add(h12);
-        res.list.add(h13);
-        res.list.add(h14);
-        res.list.add(h15);
+//        res.list.add(h7);
+//        res.list.add(h8);
+//        res.list.add(h9);
+//        res.list.add(h10);
+//        res.list.add(h11);
+//        res.list.add(h12);
+//        res.list.add(h13);
+//        res.list.add(h14);
+//        res.list.add(h15);
 
         return res;
     }
@@ -287,6 +287,17 @@ public class Main {
 
     public static void main(String[] args) {
        Main main = new Main();
-       main.evaluate();
+       //main.evaluate();
+
+       Encoder encoder = new Encoder();
+
+       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/t1.txt");
+       CNFEval cnfEval = new CNFEval(encoder.n);
+       boolean res = cnfEval.eval(root,0);
+//       for(int i=0;i< cnfEval.n;i++){
+//           System.out.print(cnfEval.values[i]+" ");
+//       }
+        encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/ans1.txt",res, cnfEval.values);
+
     }
 }

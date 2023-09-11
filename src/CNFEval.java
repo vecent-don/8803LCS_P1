@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +66,6 @@ public class CNFEval {
     public CNFEval(int val){
         n = val;
         values = new boolean[n];
-
     }
 
 
@@ -132,16 +134,16 @@ public class CNFEval {
         Node node;
         boolean res=false;
         if(info.pos==0){
-             values[info.key] = true;
-             node = reduceCNF(info,root,true);
+             values[info.key] = false;
+             node = reduceCNF(info,root,false);
              if(node.value==false){
                  res =  false;
              }else {
                  res =  eval(node,depth+1);
              }
         }else if(info.neg==0){
-             values[info.key] = false;
-             node = reduceCNF(info,root,false);
+             values[info.key] = true;
+             node = reduceCNF(info,root,true);
             if(node.value==false){
                 res =  false;
             }else {
@@ -192,4 +194,6 @@ public class CNFEval {
         node.list = andArr;
         return node;
     }
+
+
 }
