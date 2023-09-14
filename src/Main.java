@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Main {
@@ -251,16 +253,37 @@ public class Main {
             System.out.println("],");
         }
     }
+    public void writeFile(String path, Node node){
+        try {
+            // Create a FileWriter object
+            FileWriter writer = new FileWriter(path);
+            writer.write("c Einstein's puzzle encoding\n");
 
-    public boolean evaluate(){
-        Map<Integer, CNFEval.Info> map = new HashMap<>();
-        Node node = construct();
-        //flat
-        node.flat();
-        //init count
-        CNFEval cnfEval = new CNFEval(x*y*z);
-        //calculate
-        boolean ans = cnfEval.eval(node,0);
+            StringBuilder sb = new StringBuilder();
+            sb.append("p cnf 125 "+node.list.size()+"\n");
+            writer.write(sb.toString());
+
+            for(int i=0;i<node.list.size();i++){
+                Node or = node.list.get(i);
+                for(int j=0;j<or.list.size();j++){
+                    Node c = or.list.get(j);
+                    writer.write((c.key+1)*(c.isNegative?-1:1)+"");
+                    if(j!=or.list.size()-1){
+                        writer.write(" ");
+                    }
+                }
+                if(i!=node.list.size()-1){writer.write(" 0\n");}
+            }
+
+            writer.close();
+
+            System.out.println("Text has been written to " + path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printPuzzle(CNFEval cnfEval){
         String[][] res = new String[x][z];
         for(int k=0;k<x;k++){
             for(int i=0;i<y;i++){
@@ -272,33 +295,48 @@ public class Main {
                 }
             }
         }
-        System.out.println(ans);
         for(int k=0;k<x;k++){
             for (int j=0;j<z;j++){
                 System.out.print(res[k][j]+"\t");
             }
             System.out.print("\n");
         }
-
-
-        return ans;
     }
 
+    public boolean evaluate(){
+        Map<Integer, CNFEval.Info> map = new HashMap<>();
+        Node node = construct();
+        //flat
+        node.flat();
+        //init count
+        CNFEval cnfEval = new CNFEval(x*y*z);
+        //calculate
+        boolean ans = cnfEval.eval(node,0);
+        System.out.println(ans);
+        printPuzzle(cnfEval);
+        return ans;
+    }
+    public void constructCNFFormat(){
+        Map<Integer, CNFEval.Info> map = new HashMap<>();
+        Node node = construct();
+        node.flat();
+        writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt",node);
+
+    }
     public static void main(String[] args) {
 
        Main main = new Main();
-       main.print();
-       main.evaluate();
-
-//       Encoder encoder = new Encoder();
-//
-//       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/t1.txt");
-//       CNFEval cnfEval = new CNFEval(encoder.n);
-//       boolean res = cnfEval.eval(root,0);
-////       for(int i=0;i< cnfEval.n;i++){
-////           System.out.print(cnfEval.values[i]+" ");
-////       }
-//        encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/ans1.txt",res, cnfEval.values);
+       main.constructCNFFormat();
+       Encoder encoder = new Encoder();
+       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt");
+       CNFEval cnfEval = new CNFEval(encoder.n);
+       boolean res = cnfEval.eval(root,0);
+       for(int i=0;i< cnfEval.n;i++){
+           System.out.print(cnfEval.values[i]+" ");
+       }
+        System.out.println();
+       main.printPuzzle(cnfEval);
+       encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/output.txt",res, cnfEval.values);
 
     }
 }
