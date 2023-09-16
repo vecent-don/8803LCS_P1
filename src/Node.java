@@ -2,9 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+// this class is used to represent formula and proposition.
 public class Node {
     int key;
     boolean value;
+
+    // whether this node is a proposition
     boolean isLeaf;
     boolean isNegative;
     boolean isAnd;

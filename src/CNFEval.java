@@ -11,9 +11,12 @@ public class CNFEval {
         int pos;
         int neg;
 
+        int clause;
         int key;
 
         int minOccur = Integer.MAX_VALUE;
+
+        double score = 0;
 
         public Info(int key){
             this.key = key;
@@ -63,19 +66,24 @@ public class CNFEval {
     }
 
     int n;
+
+    boolean[] values;
+    List<Node> path  = new ArrayList<>();
+
     public CNFEval(int val){
         n = val;
         values = new boolean[n];
     }
 
 
+
     public Info findCandidate(Map<Integer, Info> map){
-        List<Integer> list = new ArrayList<>();
         for(Integer i:map.keySet()){
             if(map.get(i).minOccur==1){
                 return map.get(i);
             }
         }
+        //
         for(Integer i:map.keySet()){
             if(map.get(i).pos==0 || map.get(i).neg==0){
                 return map.get(i);
@@ -114,12 +122,11 @@ public class CNFEval {
             }
         }
     }
-    boolean[] values;
 
-    List<Node> path  = new ArrayList<>();
+
+
     public boolean eval(Node root,int depth){
         path.add(root);
-
         Map<Integer,Info> map = new HashMap<>();
         count(root,map);
         if(map.size()==0){
@@ -131,11 +138,12 @@ public class CNFEval {
             System.out.println(depth);
             return true;
         }
+
         Node node;
         boolean res=false;
         if(info.pos==0){
              values[info.key] = false;
-             node = reduceCNF(info,root,false);
+             node = reduceCNF(info.key, root,false);
              if(node.value==false){
                  res =  false;
              }else {
@@ -143,7 +151,7 @@ public class CNFEval {
              }
         }else if(info.neg==0){
              values[info.key] = true;
-             node = reduceCNF(info,root,true);
+             node = reduceCNF(info.key, root,true);
             if(node.value==false){
                 res =  false;
             }else {
@@ -151,12 +159,12 @@ public class CNFEval {
             }
         }else{
              values[info.key] = true;
-             node = reduceCNF(info,root,true);
+             node = reduceCNF(info.key, root,true);
              if(node.value ==true && eval(node,depth+1)){
                 res = true;
              }else {
                 values[info.key] = false;
-                node = reduceCNF(info,root,false);
+                node = reduceCNF(info.key, root,false);
                 if(node.value==false){
                     res = false;
                 }else{
@@ -164,28 +172,30 @@ public class CNFEval {
                 }
             }
         }
-
         if(res==false)path.remove(path.size()-1);
         return res;
     }
 
     // only handle perfect 3-layer form
-    public Node reduceCNF(Info info, Node root, boolean val){
+    public Node reduceCNF(int key, Node root, boolean val){
         Node node = root.copy();
         List<Node> andArr = new ArrayList<>();
         // update value, update list
         for(Node or: node.list){
             List<Node> arr = new ArrayList<>();
             for(Node c: or.list){
-                if(info.key==c.key){
+                if(key==c.key){
                     boolean value = c.isNegative? (!val):val;
                     or.value = or.value || value;
                 }else{
                     arr.add(c);
                 }
             }
-            or.list = arr;
-            if(or.list.size()>0){
+
+            if(or.value==true){
+                //
+            }else if(arr.size()>0){
+                or.list = arr;
                 andArr.add(or);
             }else{
                 node.value = node.value && or.value;

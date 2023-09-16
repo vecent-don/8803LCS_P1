@@ -1,12 +1,24 @@
+import javax.swing.border.EmptyBorder;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
+//Encoder.java is used to handle file reading and writing according DIMACS format
 public class Encoder {
+    // n : number of proposition
+    // m : number of clauses
     int n,m=0;
     List<String> comments = new ArrayList<>();
+    public Encoder(){
+
+    }
+    public Encoder(int n,int m){
+        this.n = n;
+        this.m = m;
+        comments.add("c default comments");
+    }
     public  Node readFile(String path){
 
         Node root = new ENode("Par","and");
@@ -59,8 +71,44 @@ public class Encoder {
 
         return root;
     }
+// this method is only used for test purpose
+    public void build(String path){
+        try {
+            // Create a FileWriter object
+            FileWriter writer = new FileWriter(path);
 
-    public void writeFile(String path, boolean res, boolean[] values){
+            for(String c:comments){
+                writer.write(c+"\n");
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append("p cnf ");;
+            sb.append(n+" ");
+            sb.append(m+"\n");
+            writer.write(sb.toString());
+
+            for(int i=1;i<100;i++){
+                for(int j=1;j<100;j++){
+                    if(i!=j)writer.write(j+" ");
+                }
+                writer.write("101 0\n");
+            }
+            for(int i=1;i<100;i++){
+                for(int j=1;j<100;j++){
+                    if(i!=j)writer.write(-j+" ");
+                }
+                writer.write("101 0\n");
+            }
+            // Close the FileWriter to release system resources
+            writer.close();
+
+            System.out.println("Text has been written to " + path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void writeFile(String path, int success, boolean[] values){
         try {
             // Create a FileWriter object
             FileWriter writer = new FileWriter(path);
@@ -70,7 +118,6 @@ public class Encoder {
             }
             StringBuilder sb = new StringBuilder();
             sb.append("s cnf ");
-            int success = res?1:0;
             sb.append(success+" ");
             sb.append(n+" ");
             sb.append(m+"\n");
@@ -85,5 +132,11 @@ public class Encoder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static void main(String[] args) {
+        Encoder encoder = new Encoder();
+        encoder.build("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/final.txt");
     }
 }

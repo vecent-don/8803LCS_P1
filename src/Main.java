@@ -15,11 +15,7 @@ public class Main {
 
     int x=5,y=5,z=5;
 
-//    // runtime value info
-//    boolean[][][] records = new boolean[x][y][z]; // kth type, ith value put in the jth loc
-//    //  runtime visiting info
-//    boolean[][][] vis = new boolean[x][y][z]; // kth type, ith value put in the jth loc
-
+    // build exclusive type
     public Node buildBasic(){
         // exclusive
         Node res = new ENode("Par","and");
@@ -79,6 +75,7 @@ public class Main {
         return res;
     }
 
+    // build "2 value occupy the same location"
     public Node occupySpecificLoc(int k, int i, int j){
         return new ENode(true,false,k,i,j);
     }
@@ -141,13 +138,11 @@ public class Main {
                 }
             }
         }
-        System.err.println("wrong input");
         System.out.println("wrong input");
         return null;
     }
     public Node construct(){
         Node res = new ENode("Par","and");
-
         Node basic = buildBasic();
 
         int[] t1, t2;
@@ -303,40 +298,119 @@ public class Main {
         }
     }
 
-    public boolean evaluate(){
+    public boolean evaluate(CNFEval cnfEval, Node node){
+        node.flat();
+        //calculate
+        long startTime = System.currentTimeMillis();
+        boolean ans = cnfEval.eval(node,0);
+        System.out.println(ans);
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        System.out.println("Elapsed time in milliseconds: " + elapsedTime);
+        System.out.println("");
+
+        return ans;
+    }
+
+    public boolean evaluatePuzzle(CNFEval cnfEval){
         Map<Integer, CNFEval.Info> map = new HashMap<>();
         Node node = construct();
-        //flat
-        node.flat();
-        //init count
-        CNFEval cnfEval = new CNFEval(x*y*z);
-        //calculate
-        boolean ans = cnfEval.eval(node,0);
+        boolean ans = evaluate(cnfEval,node);
         System.out.println(ans);
         printPuzzle(cnfEval);
         return ans;
     }
-    public void constructCNFFormat(){
+    public void constructCNFFormat(String path){
         Map<Integer, CNFEval.Info> map = new HashMap<>();
         Node node = construct();
         node.flat();
-        writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt",node);
+        writeFile(path,node);
 
     }
     public static void main(String[] args) {
+        Main main =  new Main();
 
-       Main main = new Main();
-       main.constructCNFFormat();
-       Encoder encoder = new Encoder();
-       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt");
-       CNFEval cnfEval = new CNFEval(encoder.n);
-       boolean res = cnfEval.eval(root,0);
-       for(int i=0;i< cnfEval.n;i++){
-           System.out.print(cnfEval.values[i]+" ");
-       }
-        System.out.println();
-       main.printPuzzle(cnfEval);
-       encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/output.txt",res, cnfEval.values);
+        if(args.length == 1){
+            // convert puzzle to DIMACS format input file
+            String path = args[0];
+            main.constructCNFFormat(path);
+        }else if(args.length==2){
+            // convert and evaluate the puzzle , and then write results to output file directly
+            String method=args[0];
+            CNFEval cnfEval = new CNFEval(0);
+            int n  = 125;
+            int m = 617;
+            if(method.equals("random")){
+                cnfEval = new CNFEvalRandom(n);
+            }else if(method.equals("2clause")){
+                cnfEval = new CNFEval2Clause(n);
+            }else if(method.equals("opt")){
+                cnfEval = new CNFEvalOpt(n);
+            }else {
+                System.err.println("wrong input");
+                System.exit(1);
+            }
+            String output = args[1];
+            boolean res = main.evaluatePuzzle(cnfEval);
+            int success= res?1:0;
+            new Encoder(n,m).writeFile(output,success, cnfEval.values);
+
+        }else if(args.length==3){
+            // read input file, evaluate CNF, and then write results to output file
+            String method=args[0];
+            CNFEval cnfEval = new CNFEval(0);
+            String input = args[1];
+            Encoder encoder = new Encoder();
+            Node root = encoder.readFile(input);
+            int n  = encoder.n;
+            if(method.equals("random")){
+                cnfEval = new CNFEvalRandom(n);
+            }else if(method.equals("2clause")){
+                cnfEval = new CNFEval2Clause(n);
+            }else if(method.equals("opt")){
+                cnfEval = new CNFEvalOpt(n);
+            }else {
+                System.err.println("wrong input");
+                System.exit(1);
+            }
+            String output = args[2];
+            boolean res = cnfEval.eval(root,0);
+            int success= res?1:0;
+            encoder.writeFile(output,success, cnfEval.values);
+        }else{
+            System.err.println("wrong input");
+            System.exit(1);
+        }
+
+//
+//        main.evaluatePuzzle(new CNFEvalRandom(n));
+//
+//        main.evaluatePuzzle(new CNFEval2Clause(n));
+//
+//        main.evaluatePuzzle(new CNFEvalOpt(n));
+
+//        Encoder encoder = new Encoder();
+//        Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/final.txt");
+//        main.evaluate(new CNFEvalRandom(n),root);
+//
+//        main.evaluate(new CNFEval2Clause(n),root);
+//
+//        main.evaluate(new CNFEvalOpt(n),root);
+
+
+//       main.constructCNFFormat();
+//       Encoder encoder = new Encoder();
+//       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt");
+//       CNFEval cnfEval = new CNFEval(encoder.n);
+//       boolean res = cnfEval.eval(root,0);
+//       for(int i=0;i< cnfEval.n;i++){
+//           System.out.print(cnfEval.values[i]+" ");
+//       }
+//       System.out.println();
+//       main.printPuzzle(cnfEval);
+//       encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/output.txt",res, cnfEval.values);
 
     }
+
+
 }

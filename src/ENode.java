@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
+// This class is specific for the puzzle problem
 public class ENode extends Node{
 
     // mode = true, use key mode
