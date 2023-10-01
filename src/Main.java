@@ -328,8 +328,8 @@ public class Main {
 
     }
     public static void main(String[] args) {
+        //System.out.println(Integer.MAX_VALUE/(4096*4));
         Main main =  new Main();
-
         if(args.length == 1){
             // convert puzzle to DIMACS format input file
             String path = args[0];
@@ -373,8 +373,10 @@ public class Main {
                 System.err.println("wrong input");
                 System.exit(1);
             }
+
             String output = args[2];
             boolean res = cnfEval.eval(root,0);
+            main.printPuzzle(cnfEval);
             int success= res?1:0;
             encoder.writeFile(output,success, cnfEval.values);
         }else{
@@ -382,33 +384,7 @@ public class Main {
             System.exit(1);
         }
 
-//
-//        main.evaluatePuzzle(new CNFEvalRandom(n));
-//
-//        main.evaluatePuzzle(new CNFEval2Clause(n));
-//
-//        main.evaluatePuzzle(new CNFEvalOpt(n));
 
-//        Encoder encoder = new Encoder();
-//        Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/final.txt");
-//        main.evaluate(new CNFEvalRandom(n),root);
-//
-//        main.evaluate(new CNFEval2Clause(n),root);
-//
-//        main.evaluate(new CNFEvalOpt(n),root);
-
-
-//       main.constructCNFFormat();
-//       Encoder encoder = new Encoder();
-//       Node root = encoder.readFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/input.txt");
-//       CNFEval cnfEval = new CNFEval(encoder.n);
-//       boolean res = cnfEval.eval(root,0);
-//       for(int i=0;i< cnfEval.n;i++){
-//           System.out.print(cnfEval.values[i]+" ");
-//       }
-//       System.out.println();
-//       main.printPuzzle(cnfEval);
-//       encoder.writeFile("/Users/yufengsu/Downloads/lecture/Archive/CS 2110/assignment/hw1_code/LCS1/src/resource/output.txt",res, cnfEval.values);
 
     }
 

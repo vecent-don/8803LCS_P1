@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,17 +94,20 @@ public class CNFEval {
         return null;
     }
 
+    public void countForLeaf(Node node, Map<Integer, Info> map){
+        int key  = node.key;
+        if(map.containsKey(key)==false) map.put(key,new Info(key));
+        Info info = map.get(key);
+        if(node.isNegative){
+            info.neg++;
+        }else{
+            info.pos++;
+        }
+    }
 
     public void count(Node node, Map<Integer, Info> map){
         if(node.isLeaf){
-            int key  = node.key;
-            if(map.containsKey(key)==false) map.put(key,new Info(key));
-            Info info = map.get(key);
-            if(node.isNegative){
-                info.neg++;
-            }else{
-                info.pos++;
-            }
+            countForLeaf(node,map);
         }else{
             for(Node c: node.list){
                 count(c,map);
@@ -123,57 +124,56 @@ public class CNFEval {
         }
     }
 
+    public boolean assignValue(Node  root, Info info,int depth){
+        Node node;
+        boolean res=false;
+        boolean val = (info.pos>info.neg)? true:false;
+        values[info.key] = val;
+        node = reduceCNF(info.key, root,val);
+        if(node.value ==true && eval(node,depth+1)){
+            res = true;
+        }else {
+            values[info.key] =!val;
+            node = reduceCNF(info.key, root,!val);
+            if(node.value==false){
+                res = false;
+            }else{
+                res =  eval(node,depth+1);
+            }
+        }
+        return res;
 
+    }
 
+    long evalCnt = 0;
+    boolean terminated = false;
     public boolean eval(Node root,int depth){
+        // track info
+        evalCnt++;
+        if(evalCnt>=Integer.MAX_VALUE/(4096*4)){
+            terminated = true;
+            //System.out.println("have to terminated");
+            return false;
+        }
         path.add(root);
+
+        // count and then find proposition to be eliminated  in this recur
         Map<Integer,Info> map = new HashMap<>();
         count(root,map);
         if(map.size()==0){
-            System.out.println(depth);
+            //System.out.println(depth);
             return true;
         }
         Info info =  findCandidate(map);
         if(info==null){
-            System.out.println(depth);
+            System.err.println("impossible cases of info");
             return true;
         }
 
-        Node node;
-        boolean res=false;
-        if(info.pos==0){
-             values[info.key] = false;
-             node = reduceCNF(info.key, root,false);
-             if(node.value==false){
-                 res =  false;
-             }else {
-                 res =  eval(node,depth+1);
-             }
-        }else if(info.neg==0){
-             values[info.key] = true;
-             node = reduceCNF(info.key, root,true);
-            if(node.value==false){
-                res =  false;
-            }else {
-                res = eval(node,depth+1);
-            }
-        }else{
-             values[info.key] = true;
-             node = reduceCNF(info.key, root,true);
-             if(node.value ==true && eval(node,depth+1)){
-                res = true;
-             }else {
-                values[info.key] = false;
-                node = reduceCNF(info.key, root,false);
-                if(node.value==false){
-                    res = false;
-                }else{
-                    res =  eval(node,depth+1);
-                }
-            }
-        }
+        boolean res = assignValue(root,info,depth);
         if(res==false)path.remove(path.size()-1);
         return res;
+
     }
 
     // only handle perfect 3-layer form
@@ -193,7 +193,7 @@ public class CNFEval {
             }
 
             if(or.value==true){
-                //
+                //remove
             }else if(arr.size()>0){
                 or.list = arr;
                 andArr.add(or);
@@ -204,6 +204,5 @@ public class CNFEval {
         node.list = andArr;
         return node;
     }
-
 
 }

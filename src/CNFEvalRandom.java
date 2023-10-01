@@ -1,14 +1,31 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CNFEvalRandom extends CNFEval{
     public CNFEvalRandom(int val) {
         super(val);
     }
+    public boolean assignValue(Node  root, Info info,int depth){
+        Node node;
+        boolean res=false;
+        boolean val = new Random().nextBoolean();
+        values[info.key] = val;
+        node = reduceCNF(info.key, root,val);
+        if(node.value ==true && eval(node,depth+1)){
+            res = true;
+        }else {
+            values[info.key] =!val;
+            node = reduceCNF(info.key, root,!val);
+            if(node.value==false){
+                res = false;
+            }else{
+                res =  eval(node,depth+1);
+            }
+        }
+        return res;
 
+    }
 
+    @Override
     public Info findCandidate(Map<Integer, Info> map){
         List<Integer> candidate = new ArrayList<>();
         for(Integer i:map.keySet()){
@@ -16,48 +33,20 @@ public class CNFEvalRandom extends CNFEval{
                 candidate.add(i);
             }
         }
-        //random pick
-        for(Integer i:candidate){
-            return map.get(i);
+        Random random = new Random();
+        // random pick when tying
+        if(candidate.size()>0){
+            int index = random.nextInt(candidate.size());
+            return map.get(candidate.get(index));
         }
         //random pick
-        for(int i:map.keySet()){
-            return map.get(i);
+        if(map.size()>0){
+            int index = random.nextInt(map.size());
+            return map.get(new ArrayList<>(map.keySet()).get(index));
         }
         return null;
     }
 
 
-//    public boolean eval(Node root,int depth){
-//        path.add(root);
-//        Map<Integer,Info> map = new HashMap<>();
-//        count(root,map);
-//        if(map.size()==0){
-//            System.out.println(depth);
-//            return true;
-//        }
-//        Info info =  findCandidate(map);
-//        if(info==null){
-//            System.out.println(depth);
-//            return true;
-//        }
-//
-//        Node node;
-//        boolean res=false;
-//        values[info.key] = true;
-//        node = reduceCNF(info.key, root,true);
-//        if(node.value ==true && eval(node,depth+1)){
-//            res = true;
-//        }else {
-//            values[info.key] = false;
-//            node = reduceCNF(info.key, root,false);
-//            if(node.value==false){
-//                res = false;
-//            }else{
-//                res =  eval(node,depth+1);
-//            }
-//        }
-//        if(res==false)path.remove(path.size()-1);
-//        return res;
-//    }
+
 }
